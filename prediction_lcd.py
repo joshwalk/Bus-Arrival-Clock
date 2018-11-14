@@ -1,6 +1,9 @@
 import requests
 import json
 from datetime import datetime
+import board
+import digitalio
+import adafruit_character_lcd
 
 def get_next_predicted_time(stop_id, route):
     base_url = "http://rt.theride.org/bustime/api/v3/getpredictions?key=PAvcL9aJb9U8WMrzmCesKyw9C&format=json&rtpidatafeed=bustime"
@@ -23,12 +26,27 @@ def calculate_seconds_until(time_string):
     return td.seconds
 
 def main():
+    lcd.clear()
+
+    lcd_rs = digitalio.DigitalInOut(board.D26)
+    lcd_en = digitalio.DigitalInOut(board.D19)
+    lcd_d7 = digitalio.DigitalInOut(board.D27)
+    lcd_d6 = digitalio.DigitalInOut(board.D22)
+    lcd_d5 = digitalio.DigitalInOut(board.D24)
+    lcd_d4 = digitalio.DigitalInOut(board.D25)
+
+    lcd_columns = 16
+    lcd_rows = 2
+
+    lcd = adafruit_character_lcd.Character_LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
+
     # Stop ID for Packard & Arch = 1720
     # Route = 5 (Packard) towards Blake Transit Center
     next_time = get_next_predicted_time(1720, 5)
     seconds_until = calculate_seconds_until(next_time)
 
     print(seconds_until / 60)
+    lcd.message(str(seconds_until / 60))
 
 if __name__ == "__main__":
     main()
