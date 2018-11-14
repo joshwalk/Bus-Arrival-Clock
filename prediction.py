@@ -4,7 +4,8 @@ from datetime import datetime
 
 def get_next_predicted_time(stop_id, route):
     base_url = "http://rt.theride.org/bustime/api/v3/getpredictions?key=PAvcL9aJb9U8WMrzmCesKyw9C&format=json&rtpidatafeed=bustime"
-    query = f"{base_url}&stpid={stop_id}&rt={route}"
+    query = "{}&stpid={}&rt={}".format(base_url, stop_id, route)
+
     r = requests.get(query)
     res = r.json()
 
