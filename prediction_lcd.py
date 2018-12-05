@@ -4,6 +4,8 @@ from datetime import datetime
 import board
 import digitalio
 import adafruit_character_lcd
+from math import floor
+import time
 
 def get_next_predicted_time(stop_id, route):
     base_url = "http://rt.theride.org/bustime/api/v3/getpredictions?key=PAvcL9aJb9U8WMrzmCesKyw9C&format=json&rtpidatafeed=bustime"
@@ -39,14 +41,24 @@ def main():
     lcd = adafruit_character_lcd.Character_LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
 
     lcd.clear()
-
-    # Stop ID for Packard & Arch = 1720
-    # Route = 5 (Packard) towards Blake Transit Center
-    next_time = get_next_predicted_time(1720, 5)
-    seconds_until = calculate_seconds_until(next_time)
-
-    print(seconds_until / 60)
-    lcd.message(str(seconds_until / 60))
+    
+    starttime= time.time()
+    
+    while True:
+        # Stop ID for Packard & Arch = 1720
+        # Route = 5 (Packard) towards Blake Transit Center
+        next_time = get_next_predicted_time(1720, 5)
+        seconds_until = calculate_seconds_until(next_time)
+            
+        print(seconds_until / 60)
+        lcd.clear()
+        lcd.message("Route 5\nNext:" + str(floor(seconds_until / 60)) + " min")
+        
+        time.sleep(20)
+        
+        lcd.clear()
+        lcd.message("Refreshing...")
+        
 
 if __name__ == "__main__":
     main()
